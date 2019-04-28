@@ -10,3 +10,6 @@ end
 
 ret = tremolo("0")
 assert_equal 0, ret
+
+ret = tremolo("42")
+assert_equal 42, ret

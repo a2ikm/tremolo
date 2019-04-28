@@ -1,7 +1,8 @@
 module Tremolo
   class CLI
     def run
-      0
+      program = $stdin.read
+      program.to_i
     end
   end
 end
