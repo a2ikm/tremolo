@@ -30,3 +30,6 @@ assert_equal 2, ret
 
 ret = tremolo("3 7 %")
 assert_equal 1, ret
+
+ret = tremolo("1 2 + 3 * 10 /")
+assert_equal 1, ret

@@ -7,28 +7,29 @@ module Tremolo
 
     def evaluate(program)
       tokens = program.split(/\s+/)
-      loop do
-        a = tokens.pop
-        case a
+      stack = []
+      while token = tokens.shift
+        case token
         when "+"
-          x, y = tokens.pop.to_i, tokens.pop.to_i
-          tokens.push(x + y)
+          x, y = stack.pop.to_i, stack.pop.to_i
+          stack.push(x + y)
         when "-"
-          x, y = tokens.pop.to_i, tokens.pop.to_i
-          tokens.push(x - y)
+          x, y = stack.pop.to_i, stack.pop.to_i
+          stack.push(x - y)
         when "*"
-          x, y = tokens.pop.to_i, tokens.pop.to_i
-          tokens.push(x * y)
+          x, y = stack.pop.to_i, stack.pop.to_i
+          stack.push(x * y)
         when "/"
-          x, y = tokens.pop.to_i, tokens.pop.to_i
-          tokens.push(x / y)
+          x, y = stack.pop.to_i, stack.pop.to_i
+          stack.push(x / y)
         when "%"
-          x, y = tokens.pop.to_i, tokens.pop.to_i
-          tokens.push(x % y)
+          x, y = stack.pop.to_i, stack.pop.to_i
+          stack.push(x % y)
         else
-          return a.to_i
+          stack.push(token.to_i)
         end
       end
+      stack.pop
     end
   end
 end
