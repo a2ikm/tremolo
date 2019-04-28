@@ -13,6 +13,18 @@ module Tremolo
         when "+"
           x, y = tokens.pop.to_i, tokens.pop.to_i
           tokens.push(x + y)
+        when "-"
+          x, y = tokens.pop.to_i, tokens.pop.to_i
+          tokens.push(x - y)
+        when "*"
+          x, y = tokens.pop.to_i, tokens.pop.to_i
+          tokens.push(x * y)
+        when "/"
+          x, y = tokens.pop.to_i, tokens.pop.to_i
+          tokens.push(x / y)
+        when "%"
+          x, y = tokens.pop.to_i, tokens.pop.to_i
+          tokens.push(x % y)
         else
           return a.to_i
         end

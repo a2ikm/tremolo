@@ -18,3 +18,15 @@ assert_equal 42, ret
 
 ret = tremolo("1 2 +")
 assert_equal 3, ret
+
+ret = tremolo("1 3 -")
+assert_equal 2, ret
+
+ret = tremolo("2 3 *")
+assert_equal 6, ret
+
+ret = tremolo("2 5 /")
+assert_equal 2, ret
+
+ret = tremolo("3 7 %")
+assert_equal 1, ret
