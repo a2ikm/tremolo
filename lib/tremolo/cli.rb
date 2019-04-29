@@ -1,12 +1,18 @@
+require_relative "tokenizer"
+
 module Tremolo
   class CLI
     def run
       program = $stdin.read
-      evaluate(program)
+      tokens = tokenize(program)
+      evaluate(tokens)
     end
 
-    def evaluate(program)
-      tokens = program.split(/\s+/)
+    def tokenize(program)
+      Tokenizer.new(program).tokenize
+    end
+
+    def evaluate(tokens)
       stack = []
       while token = tokens.shift
         case token
