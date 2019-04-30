@@ -10,18 +10,18 @@ module Tremolo
       @tokens = []
 
       while @pos < @len
-        if whitespace?(char)
+        if whitespace?(current)
           advance
           next
         end
 
-        if char == "+" || char == "-" || char == "*" || char == "/" || char == "%"
-          @tokens << char
+        if current == "+" || current == "-" || current == "*" || current == "/" || current == "%"
+          @tokens << current
           advance
           next
         end
 
-        if digit?(char)
+        if digit?(current)
           @tokens << read_digit
           advance
           next
@@ -51,7 +51,7 @@ module Tremolo
       @source[pos..@pos]
     end
 
-    def char
+    def current
       @source[@pos]
     end
 
