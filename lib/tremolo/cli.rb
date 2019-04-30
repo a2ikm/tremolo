@@ -1,41 +1,42 @@
 require_relative "tokenizer"
+require_relative "parser"
 
 module Tremolo
   class CLI
     def run
       source = $stdin.read
       tokens = tokenize(source)
-      evaluate(tokens)
+      program = parse(tokens)
+      evaluate(program)
     end
 
     def tokenize(source)
       Tokenizer.new(source).tokenize
     end
 
-    def evaluate(tokens)
-      stack = []
-      while token = tokens.shift
-        case token
-        when "+"
-          x, y = stack.pop.to_i, stack.pop.to_i
-          stack.push(x + y)
-        when "-"
-          x, y = stack.pop.to_i, stack.pop.to_i
-          stack.push(x - y)
-        when "*"
-          x, y = stack.pop.to_i, stack.pop.to_i
-          stack.push(x * y)
-        when "/"
-          x, y = stack.pop.to_i, stack.pop.to_i
-          stack.push(x / y)
-        when "%"
-          x, y = stack.pop.to_i, stack.pop.to_i
-          stack.push(x % y)
-        else
-          stack.push(token.to_i)
-        end
+    def parse(tokens)
+      Parser.new(tokens).parse
+    end
+
+    def evaluate(node)
+      case node.type
+      when :+
+        evaluate(node.lhs) + evaluate(node.rhs)
+      when :-
+        evaluate(node.lhs) - evaluate(node.rhs)
+      when :*
+        evaluate(node.lhs) * evaluate(node.rhs)
+      when :/
+        evaluate(node.lhs) / evaluate(node.rhs)
+      when :%
+        evaluate(node.lhs) % evaluate(node.rhs)
+      when :number
+        evaluate_number(node)
       end
-      stack.pop
+    end
+
+    def evaluate_number(node)
+      node.lhs.to_i
     end
   end
 end

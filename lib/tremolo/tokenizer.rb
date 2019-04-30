@@ -1,4 +1,13 @@
 module Tremolo
+  class Token
+    attr_reader :type, :input
+
+    def initialize(type, input)
+      @type = type
+      @input = input
+    end
+  end
+
   class Tokenizer
     def initialize(source)
       @source = source
@@ -16,13 +25,13 @@ module Tremolo
         end
 
         if current == "+" || current == "-" || current == "*" || current == "/" || current == "%"
-          @tokens << current
+          @tokens << Token.new(current.to_sym, current)
           advance
           next
         end
 
         if digit?(current)
-          @tokens << read_digit
+          @tokens << Token.new(:number, read_digit)
           advance
           next
         end
