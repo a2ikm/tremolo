@@ -22,6 +22,9 @@ module Tremolo
       parse_add
     end
 
+    # add  -> mul add'
+    # add' -> empty
+    # add' -> {+-} add
     def parse_add
       mul = parse_mul
       %i(+ -).each do |op|
@@ -30,6 +33,9 @@ module Tremolo
       mul
     end
 
+    # mul  -> number mul'
+    # mul' -> empty
+    # mul' -> {*/%} mul
     def parse_mul
       number = parse_number
       %i(* / %).each do |op|
