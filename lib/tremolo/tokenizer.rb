@@ -24,7 +24,8 @@ module Tremolo
           next
         end
 
-        if current == "+" || current == "-" || current == "*" || current == "/" || current == "%"
+        if current == "+" || current == "-" || current == "*" || current == "/" || current == "%" ||
+           current == "(" || current == ")"
           @tokens << Token.new(current.to_sym, current)
           advance
           next

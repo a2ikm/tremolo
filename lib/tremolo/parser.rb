@@ -33,15 +33,27 @@ module Tremolo
       mul
     end
 
-    # mul  -> number mul'
+    # mul  -> term mul'
     # mul' -> empty
     # mul' -> {*/%} mul
     def parse_mul
-      number = parse_number
+      number = parse_term
       %i(* / %).each do |op|
         return Node.new(op, number, parse_mul) if consume(op)
       end
       number
+    end
+
+    # term -> number
+    # term -> ( add )
+    def parse_term
+      if consume(:"(") 
+        add = parse_add
+        abort "parse error" unless consume(:")")
+        return add
+      end
+
+      parse_number
     end
 
     def parse_number

@@ -33,3 +33,6 @@ assert_equal 1, ret
 
 ret = tremolo("10 / 3 + 2")
 assert_equal 5, ret
+
+ret = tremolo("(1 + 2) * 3")
+assert_equal 9, ret
