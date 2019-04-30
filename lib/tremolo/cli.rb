@@ -3,13 +3,13 @@ require_relative "tokenizer"
 module Tremolo
   class CLI
     def run
-      program = $stdin.read
-      tokens = tokenize(program)
+      source = $stdin.read
+      tokens = tokenize(source)
       evaluate(tokens)
     end
 
-    def tokenize(program)
-      Tokenizer.new(program).tokenize
+    def tokenize(source)
+      Tokenizer.new(source).tokenize
     end
 
     def evaluate(tokens)

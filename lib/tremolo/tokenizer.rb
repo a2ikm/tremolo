@@ -1,8 +1,8 @@
 module Tremolo
   class Tokenizer
-    def initialize(program)
-      @program = program
-      @len = @program.length
+    def initialize(source)
+      @source = source
+      @len = @source.length
     end
 
     def tokenize
@@ -48,15 +48,15 @@ module Tremolo
           break
         end
       end
-      @program[pos..@pos]
+      @source[pos..@pos]
     end
 
     def char
-      @program[@pos]
+      @source[@pos]
     end
 
     def peek
-      @program[@pos+1]
+      @source[@pos+1]
     end
 
     def advance
