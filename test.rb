@@ -36,3 +36,9 @@ assert_equal 5, ret
 
 ret = tremolo("(1 + 2) * 3")
 assert_equal 9, ret
+
+ret = tremolo("1 + \n2")
+assert_equal 3, ret
+
+ret = tremolo("1 \n+ 2")
+assert_equal 3, ret
