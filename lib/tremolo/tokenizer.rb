@@ -7,6 +7,7 @@ module Tremolo
     "%" => :percent,
     "(" => :lparen,
     ")" => :rparen,
+    ";" => :semicolon,
   }
 
   class Token

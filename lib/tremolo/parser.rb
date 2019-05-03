@@ -2,12 +2,13 @@ require_relative "node"
 
 module Tremolo
   class Node
-    attr_reader :type, :lhs, :rhs
+    attr_reader :type, :lhs, :rhs, :stmts
 
-    def initialize(type, lhs: nil, rhs: nil)
+    def initialize(type, lhs: nil, rhs: nil, stmts: nil)
       @type = type
       @lhs = lhs
       @rhs = rhs
+      @stmts = stmts
     end
   end
 
@@ -19,6 +20,23 @@ module Tremolo
 
     def parse
       @pos = 0
+      parse_program
+    end
+
+    # program  -> stmt program'
+    # program' -> empty
+    # program' -> ; program
+    def parse_program
+      stmts = []
+      stmts << parse_stmt
+      while consume(:semicolon)
+        stmts << parse_stmt
+      end
+      Node.new(:program, stmts: stmts.compact)
+    end
+
+    # stmt -> add
+    def parse_stmt
       parse_add
     end
 

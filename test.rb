@@ -42,3 +42,12 @@ assert_equal 3, ret
 
 ret = tremolo("1 \n+ 2")
 assert_equal 3, ret
+
+ret = tremolo("1;2")
+assert_equal 2, ret
+
+ret = tremolo("1;;2")
+assert_equal 2, ret
+
+ret = tremolo(";;2")
+assert_equal 2, ret

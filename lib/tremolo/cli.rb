@@ -32,11 +32,21 @@ module Tremolo
         evaluate(node.lhs) % evaluate(node.rhs)
       when :number
         evaluate_number(node)
+      when :program
+        evaluate_program(node)
       end
     end
 
     def evaluate_number(node)
       node.lhs.to_i
+    end
+
+    def evaluate_program(node)
+      last = nil
+      node.stmts.each do |stmt|
+        last = evaluate(stmt)
+      end
+      last
     end
   end
 end
