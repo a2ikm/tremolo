@@ -64,6 +64,9 @@ module Tremolo
     end
 
     def consume(type)
+      while current&.type == :newline
+        advance
+      end
       return nil if current&.type != type
       token = current
       advance

@@ -24,6 +24,12 @@ module Tremolo
           next
         end
 
+        if newline?(current)
+          @tokens << Token.new(:newline, read_newline)
+          advance
+          next
+        end
+
         if current == "+" || current == "-" || current == "*" || current == "/" || current == "%" ||
            current == "(" || current == ")"
           @tokens << Token.new(current.to_sym, current)
@@ -42,7 +48,7 @@ module Tremolo
     end
 
     def whitespace?(char)
-      char && char.match?(/\A[[:space:]]+\z/)
+      char && char.match?(/\A[[:blank:]]+\z/)
     end
 
     def digit?(char)
@@ -58,6 +64,16 @@ module Tremolo
           break
         end
       end
+      @source[pos..@pos]
+    end
+
+    def newline?(char)
+      char && char.match?(/\A[\r\n]\z/)
+    end
+
+    def read_newline
+      pos = @pos
+      advance if current == "\r" && peek == "\n"
       @source[pos..@pos]
     end
 
