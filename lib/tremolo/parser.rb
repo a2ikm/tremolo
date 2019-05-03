@@ -4,7 +4,7 @@ module Tremolo
   class Node
     attr_reader :type, :lhs, :rhs
 
-    def initialize(type, lhs, rhs = nil)
+    def initialize(type, lhs, rhs: nil)
       @type = type
       @lhs = lhs
       @rhs = rhs
@@ -28,7 +28,7 @@ module Tremolo
     def parse_add
       mul = parse_mul
       %i(+ -).each do |op|
-        return Node.new(op, mul, parse_add) if consume(op)
+        return Node.new(op, mul, rhs: parse_add) if consume(op)
       end
       mul
     end
@@ -39,7 +39,7 @@ module Tremolo
     def parse_mul
       number = parse_term
       %i(* / %).each do |op|
-        return Node.new(op, number, parse_mul) if consume(op)
+        return Node.new(op, number, rhs: parse_mul) if consume(op)
       end
       number
     end
