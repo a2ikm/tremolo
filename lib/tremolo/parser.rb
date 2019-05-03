@@ -27,7 +27,7 @@ module Tremolo
     # add' -> {+-} add
     def parse_add
       mul = parse_mul
-      %i(+ -).each do |op|
+      %i(plus minus).each do |op|
         return Node.new(op, lhs: mul, rhs: parse_add) if consume(op)
       end
       mul
@@ -38,7 +38,7 @@ module Tremolo
     # mul' -> {*/%} mul
     def parse_mul
       number = parse_term
-      %i(* / %).each do |op|
+      %i(asterisk slash percent).each do |op|
         return Node.new(op, lhs: number, rhs: parse_mul) if consume(op)
       end
       number
@@ -47,9 +47,9 @@ module Tremolo
     # term -> number
     # term -> ( add )
     def parse_term
-      if consume(:"(") 
+      if consume(:lparen)
         add = parse_add
-        abort "parse error" unless consume(:")")
+        abort "parse error" unless consume(:rparen)
         return add
       end
 

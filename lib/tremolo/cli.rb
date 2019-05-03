@@ -20,15 +20,15 @@ module Tremolo
 
     def evaluate(node)
       case node.type
-      when :+
+      when :plus
         evaluate(node.lhs) + evaluate(node.rhs)
-      when :-
+      when :minus
         evaluate(node.lhs) - evaluate(node.rhs)
-      when :*
+      when :asterisk
         evaluate(node.lhs) * evaluate(node.rhs)
-      when :/
+      when :slash
         evaluate(node.lhs) / evaluate(node.rhs)
-      when :%
+      when :percent
         evaluate(node.lhs) % evaluate(node.rhs)
       when :number
         evaluate_number(node)

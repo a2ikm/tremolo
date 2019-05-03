@@ -1,4 +1,14 @@
 module Tremolo
+  SINGLE_TOKENS = {
+    "+" => :plus,
+    "-" => :minus,
+    "*" => :asterisk,
+    "/" => :slash,
+    "%" => :percent,
+    "(" => :lparen,
+    ")" => :rparen,
+  }
+
   class Token
     attr_reader :type, :input
 
@@ -30,9 +40,8 @@ module Tremolo
           next
         end
 
-        if current == "+" || current == "-" || current == "*" || current == "/" || current == "%" ||
-           current == "(" || current == ")"
-          @tokens << Token.new(current.to_sym, current)
+        if type = SINGLE_TOKENS[current]
+          @tokens << Token.new(type, current)
           advance
           next
         end
