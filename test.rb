@@ -63,3 +63,6 @@ assert_equal 22, ret
 
 ret = tremolo("if 1 == 2 { 11 } else { 22 }")
 assert_equal 22, ret
+
+ret = tremolo("let x = 1;\n if x > 0 {\n 1 \n} else {\n 2 \n}")
+assert_equal 1, ret
