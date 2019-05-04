@@ -16,14 +16,32 @@ module Tremolo
         evaluate(node.lhs) / evaluate(node.rhs)
       when :percent
         evaluate(node.lhs) % evaluate(node.rhs)
+      when :eq
+        evaluate(node.lhs) == evaluate(node.rhs)
+      when :ne
+        evaluate(node.lhs) != evaluate(node.rhs)
+      when :lt
+        evaluate(node.lhs) < evaluate(node.rhs)
+      when :lteq
+        evaluate(node.lhs) <= evaluate(node.rhs)
+      when :gt
+        evaluate(node.lhs) > evaluate(node.rhs)
+      when :gteq
+        evaluate(node.lhs) >= evaluate(node.rhs)
       when :number
         evaluate_number(node)
-      when :program
-        evaluate_program(node)
+      when :program, :block
+        evaluate_stmts(node.stmts)
       when :assign
         evaluate_assign(node)
       when :ident
         evaluate_ident(node)
+      when :if
+        if evaluate(node.cond)
+          evaluate(node.lhs)
+        else
+          evaluate(node.rhs)
+        end
       end
     end
 
@@ -31,9 +49,9 @@ module Tremolo
       node.lhs.to_i
     end
 
-    def evaluate_program(node)
+    def evaluate_stmts(stmts)
       last = nil
-      node.stmts.each do |stmt|
+      stmts.each do |stmt|
         last = evaluate(stmt)
       end
       last

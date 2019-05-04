@@ -54,3 +54,12 @@ assert_equal 2, ret
 
 ret = tremolo("let answer = 7; 1 + answer")
 assert_equal 8, ret
+
+ret = tremolo("if 1 == 1 { 11 }")
+assert_equal 11, ret
+
+ret = tremolo("if 1 == 1 { 11; 22 }")
+assert_equal 22, ret
+
+ret = tremolo("if 1 == 2 { 11 } else { 22 }")
+assert_equal 22, ret

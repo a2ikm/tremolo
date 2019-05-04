@@ -1,6 +1,5 @@
 module Tremolo
   SINGLE_TOKENS = {
-    "=" => :equal,
     "+" => :plus,
     "-" => :minus,
     "*" => :asterisk,
@@ -8,11 +7,15 @@ module Tremolo
     "%" => :percent,
     "(" => :lparen,
     ")" => :rparen,
+    "{" => :lbrace,
+    "}" => :rbrace,
     ";" => :semicolon,
   }
 
   KEYWORD_TOKENS = {
-    "let" => :let,
+    "let"   => :let,
+    "if"    => :if,
+    "else"  => :else,
   }
 
   class Token
@@ -42,6 +45,46 @@ module Tremolo
 
         if newline?(current)
           @tokens << Token.new(:newline, read_newline)
+          advance
+          next
+        end
+
+        if current == "="
+          if peek == "="
+            @tokens << Token.new(:eq, "==")
+            advance
+          else
+            @tokens << Token.new(:assign, current)
+          end
+          advance
+          next
+        end
+
+        if current == "!" && peek == "="
+          @tokens << Token.new(:ne, "!=")
+          advance
+          advance
+          next
+        end
+
+        if current == "<"
+          if peek == "="
+            @tokens << Token.new(:lteq, "<=")
+            advance
+          else
+            @tokens << Token.new(:lt, current)
+          end
+          advance
+          next
+        end
+
+        if current == ">"
+          if peek == "="
+            @tokens << Token.new(:gteq, ">=")
+            advance
+          else
+            @tokens << Token.new(:gt, current)
+          end
           advance
           next
         end

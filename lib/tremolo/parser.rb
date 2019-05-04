@@ -2,13 +2,14 @@ require_relative "node"
 
 module Tremolo
   class Node
-    attr_reader :type, :lhs, :rhs, :stmts
+    attr_reader :type, :lhs, :rhs, :stmts, :cond
 
-    def initialize(type, lhs: nil, rhs: nil, stmts: nil)
+    def initialize(type, lhs: nil, rhs: nil, stmts: nil, cond: nil)
       @type = type
       @lhs = lhs
       @rhs = rhs
       @stmts = stmts
+      @cond = cond
     end
   end
 
@@ -36,15 +37,73 @@ module Tremolo
     end
 
     # stmt -> let ident = add
-    # stmt -> add
+    # stmt -> if equality block
+    # stmt -> equality
     def parse_stmt
       if consume(:let)
         token = consume(:ident)
         raise "parse error" if token.nil?
-        raise "parse error" if !consume(:equal)
+        raise "parse error" if !consume(:assign)
         Node.new(:assign, lhs: token.input, rhs: parse_add)
+      elsif consume(:if)
+        cond = parse_equality
+        raise "parse error" if cond.nil?
+        block = parse_block
+        alt = nil
+        if consume(:else)
+          alt = parse_block
+        end
+        Node.new(:if, cond: cond, lhs: block, rhs: alt)
       else
-        parse_add
+        parse_equality
+      end
+    end
+
+    # block -> { stmts }
+    def parse_block
+      stmts = []
+      raise "parse error" if !consume(:lbrace)
+      loop do
+        stmts << parse_stmt
+        next if consume(:semicolon)
+        break if consume(:rbrace)
+      end
+      Node.new(:block, stmts: stmts.compact)
+    end
+
+    # equality  -> relational equality'
+    # equality' -> empty
+    # equality' -> == equality
+    # equality' -> != equality
+    def parse_equality
+      relational = parse_relational
+      if consume(:eq)
+        Node.new(:eq, lhs: relational, rhs: parse_equality)
+      elsif consume(:ne)
+        Node.new(:ne, lhs: relational, rhs: parse_equality)
+      else
+        relational
+      end
+    end
+
+    # relational  -> add relational'
+    # relational' -> empty
+    # relational' -> <  relational
+    # relational' -> <= relational
+    # relational' -> >  relational
+    # relational' -> >= relational
+    def parse_relational
+      add = parse_add
+      if consume(:lt)
+        Node.new(:lt, lhs: add, rhs: parse_relational)
+      elsif consume(:lteq)
+        Node.new(:lteq, lhs: add, rhs: parse_relational)
+      elsif consume(:gt)
+        Node.new(:gt, lhs: add, rhs: parse_relational)
+      elsif consume(:gteq)
+        Node.new(:gteq, lhs: add, rhs: parse_relational)
+      else
+        add
       end
     end
 
