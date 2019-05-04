@@ -30,7 +30,7 @@ module Tremolo
         evaluate(node.lhs) >= evaluate(node.rhs)
       when :number
         evaluate_number(node)
-      when :program, :block
+      when :program, :stmts
         evaluate_stmts(node.stmts)
       when :assign
         evaluate_assign(node)

@@ -68,7 +68,7 @@ module Tremolo
         next if consume(:semicolon)
         break if consume(:rbrace)
       end
-      Node.new(:block, stmts: stmts.compact)
+      Node.new(:stmts, stmts: stmts.compact)
     end
 
     # equality  -> relational equality'
