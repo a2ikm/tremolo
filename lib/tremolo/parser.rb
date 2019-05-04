@@ -41,9 +41,8 @@ module Tremolo
     # stmt -> equality
     def parse_stmt
       if consume(:let)
-        token = consume(:ident)
-        raise "parse error" if token.nil?
-        raise "parse error" if !consume(:assign)
+        token = expect(:ident)
+        expect(:assign)
         Node.new(:assign, lhs: token.input, rhs: parse_equality)
       elsif consume(:if)
         cond = parse_equality
@@ -62,7 +61,7 @@ module Tremolo
     # block -> { stmts }
     def parse_block
       stmts = []
-      raise "parse error" if !consume(:lbrace)
+      expect(:lbrace)
       loop do
         stmts << parse_stmt
         next if consume(:semicolon)
@@ -135,7 +134,7 @@ module Tremolo
     def parse_term
       if consume(:lparen)
         equality = parse_equality
-        abort "parse error" unless consume(:rparen)
+        expect(:rparen)
         return equality
       end
 
@@ -153,6 +152,14 @@ module Tremolo
       token = current
       advance
       token
+    end
+
+    def expect(type)
+      if token = consume(type)
+        token
+      else
+        abort "parse error: expected #{type} but got #{current&.type}"
+      end
     end
 
     def advance
