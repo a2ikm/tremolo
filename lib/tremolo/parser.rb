@@ -90,9 +90,6 @@ module Tremolo
     end
 
     def consume(type)
-      while current&.type == :newline
-        advance
-      end
       return nil if current&.type != type
       token = current
       advance
@@ -100,11 +97,23 @@ module Tremolo
     end
 
     def advance
-      @pos += 1
+      @pos += 1 + count_upcoming_skips
     end
 
     def current
       @tokens[@pos]
+    end
+
+    def peek
+      @tokens[@pos + 1 + count_upcoming_skips]
+    end
+
+    def count_upcoming_skips
+      skips = 0
+      while @tokens[@pos + 1 + skips]&.type == :newline
+        skips += 1
+      end
+      skips
     end
   end
 end
