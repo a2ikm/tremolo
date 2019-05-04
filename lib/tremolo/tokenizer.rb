@@ -105,8 +105,8 @@ module Tremolo
         else
           break
         end
-        @source[pos..@pos]
       end
+      @source[pos..@pos]
     end
 
     def current
