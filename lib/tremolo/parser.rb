@@ -35,9 +35,17 @@ module Tremolo
       Node.new(:program, stmts: stmts.compact)
     end
 
+    # stmt -> let ident = add
     # stmt -> add
     def parse_stmt
-      parse_add
+      if consume(:let)
+        token = consume(:ident)
+        raise "parse error" if token.nil?
+        raise "parse error" if !consume(:equal)
+        Node.new(:assign, lhs: token.input, rhs: parse_add)
+      else
+        parse_add
+      end
     end
 
     # add  -> mul add'

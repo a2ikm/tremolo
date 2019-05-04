@@ -1,5 +1,6 @@
 module Tremolo
   SINGLE_TOKENS = {
+    "=" => :equal,
     "+" => :plus,
     "-" => :minus,
     "*" => :asterisk,
@@ -8,6 +9,10 @@ module Tremolo
     "(" => :lparen,
     ")" => :rparen,
     ";" => :semicolon,
+  }
+
+  KEYWORD_TOKENS = {
+    "let" => :let,
   }
 
   class Token
@@ -54,7 +59,12 @@ module Tremolo
         end
 
         if ident?(current)
-          @tokens << Token.new(:ident, read_ident)
+          input = read_ident
+          if type = KEYWORD_TOKENS[input]
+            @tokens << Token.new(type, input)
+          else
+            @tokens << Token.new(:ident, input)
+          end
           advance
           next
         end

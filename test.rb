@@ -52,5 +52,5 @@ assert_equal 2, ret
 ret = tremolo(";;2")
 assert_equal 2, ret
 
-ret = tremolo("1 + ident")
+ret = tremolo("let answer = 7; 1 + answer")
 assert_equal 8, ret

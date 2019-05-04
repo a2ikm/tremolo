@@ -4,6 +4,7 @@ require_relative "parser"
 module Tremolo
   class CLI
     def run
+      @env = {}
       source = $stdin.read
       tokens = tokenize(source)
       program = parse(tokens)
@@ -34,6 +35,8 @@ module Tremolo
         evaluate_number(node)
       when :program
         evaluate_program(node)
+      when :assign
+        evaluate_assign(node)
       when :ident
         evaluate_ident(node)
       end
@@ -51,8 +54,12 @@ module Tremolo
       last
     end
 
+    def evaluate_assign(node)
+      @env[node.lhs] = evaluate(node.rhs)
+    end
+
     def evaluate_ident(node)
-      7
+      @env[node.lhs]
     end
   end
 end
