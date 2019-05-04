@@ -131,12 +131,12 @@ module Tremolo
 
     # term -> number
     # term -> ident
-    # term -> ( add )
+    # term -> ( equality )
     def parse_term
       if consume(:lparen)
-        add = parse_add
+        equality = parse_equality
         abort "parse error" unless consume(:rparen)
-        return add
+        return equality
       end
 
       if token = consume(:number)
