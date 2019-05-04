@@ -34,6 +34,8 @@ module Tremolo
         evaluate_number(node)
       when :program
         evaluate_program(node)
+      when :ident
+        evaluate_ident(node)
       end
     end
 
@@ -47,6 +49,10 @@ module Tremolo
         last = evaluate(stmt)
       end
       last
+    end
+
+    def evaluate_ident(node)
+      7
     end
   end
 end

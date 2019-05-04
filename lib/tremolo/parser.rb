@@ -63,6 +63,7 @@ module Tremolo
     end
 
     # term -> number
+    # term -> ident
     # term -> ( add )
     def parse_term
       if consume(:lparen)
@@ -71,14 +72,13 @@ module Tremolo
         return add
       end
 
-      parse_number
-    end
+      if token = consume(:number)
+        return Node.new(:number, lhs: token.input.to_i)
+      end
 
-    def parse_number
-      token = consume(:number)
-      return nil if token.nil?
-
-      Node.new(:number, lhs: token.input.to_i)
+      if token = consume(:ident)
+        return Node.new(:ident, lhs: token.input)
+      end
     end
 
     def consume(type)

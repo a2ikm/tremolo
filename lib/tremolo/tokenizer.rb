@@ -52,6 +52,12 @@ module Tremolo
           advance
           next
         end
+
+        if ident?(current)
+          @tokens << Token.new(:ident, read_ident)
+          advance
+          next
+        end
       end
 
       @tokens
@@ -85,6 +91,22 @@ module Tremolo
       pos = @pos
       advance if current == "\r" && peek == "\n"
       @source[pos..@pos]
+    end
+
+    def ident?(char)
+      char && char.match?(/\A[_a-z]\z/)
+    end
+
+    def read_ident
+      pos = @pos
+      while @pos < @len
+        if ident?(peek)
+          advance
+        else
+          break
+        end
+        @source[pos..@pos]
+      end
     end
 
     def current
