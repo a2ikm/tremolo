@@ -47,8 +47,10 @@ module Tremolo
         evaluate_binary(node)
       when :number
         evaluate_number(node)
-      when :program, :stmts
-        evaluate_stmts(node.stmts)
+      when :program
+        evaluate_program(node)
+      when :block
+        evaluate_block(node)
       when :assign
         evaluate_assign(node)
       when :ident
@@ -88,6 +90,14 @@ module Tremolo
       node.lhs.to_i
     end
 
+    def evaluate_program(node)
+      evaluate_stmts(node.stmts)
+    end
+
+    def evaluate_block(node)
+      evaluate_stmts(node.stmts)
+    end
+
     def evaluate_stmts(stmts)
       last = nil
       stmts.each do |stmt|
@@ -124,7 +134,7 @@ module Tremolo
       func.params.zip(node.args).each do |param, arg|
         @env[param.lhs] = arg.lhs
       end
-      evaluate(func.stmts)
+      evaluate(func.body)
     ensure
       @env.pop
     end

@@ -5,16 +5,47 @@ module Tremolo
                 :lhs,       # left-hand side
                 :rhs,       # right-hand side
                 :stmts,     # compound statements
+                :body,      # body block
                 :cond,      # if's condition statement
                 :params,    # function parameters
                 :args       # function arguments
 
-    def initialize(type, op: nil, lhs: nil, rhs: nil, stmts: nil, cond: nil, params: nil, args: nil)
+    #
+    ## binary
+    # node
+    #   type = binary
+    #   op = {eq,ne,lt,lteq,gt,gteq,add,sub,mul,div,mod}
+    #   lhs = node(type=*)
+    #   rhs = node(type=*)
+    #
+    ## program
+    # node
+    #   type = program
+    #   stmts = []node(type=*)
+    #
+    ## if
+    # node
+    #   type = if
+    #   cond = node(type=*)
+    #   lhs = node(type=block) : then branch
+    #           stmts = []node(type=*)
+    #   rhs = node(type=block) or nil : else branch
+    #           stmts = []node(type=*)
+    #
+    ## func
+    # node
+    #   type = func
+    #   params = []node(type=ident)
+    #   body = node(type=block)
+    #            stmts = []node(type=*)
+    #
+    def initialize(type, op: nil, lhs: nil, rhs: nil, stmts: nil, body: nil, cond: nil, params: nil, args: nil)
       @type = type
       @op = op
       @lhs = lhs
       @rhs = rhs
       @stmts = stmts
+      @body = body
       @cond = cond
       @params = params
       @args = args
@@ -73,8 +104,8 @@ module Tremolo
         expect(:lparen)
         params = parse_params
         expect(:rparen)
-        stmts = parse_block
-        Node.new(:func, params: params, stmts: stmts)
+        body = parse_block
+        Node.new(:func, params: params, body: body)
       else
         parse_equality
       end
@@ -101,7 +132,7 @@ module Tremolo
         next if consume(:semicolon)
         break if consume(:rbrace)
       end
-      Node.new(:stmts, stmts: stmts.compact)
+      Node.new(:block, stmts: stmts.compact)
     end
 
     # equality  -> relational equality'
