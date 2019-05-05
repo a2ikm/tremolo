@@ -54,11 +54,7 @@ module Tremolo
       when :ident
         evaluate_ident(node)
       when :if
-        if evaluate(node.cond)
-          evaluate(node.lhs)
-        else
-          evaluate(node.rhs)
-        end
+        evaluate_if(node)
       when :func
         evaluate_func(node)
       when :call
@@ -106,6 +102,14 @@ module Tremolo
 
     def evaluate_ident(node)
       @env[node.lhs]
+    end
+
+    def evaluate_if(node)
+      if evaluate(node.cond)
+        evaluate(node.lhs)
+      else
+        evaluate(node.rhs)
+      end
     end
 
     def evaluate_func(node)
