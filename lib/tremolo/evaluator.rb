@@ -43,28 +43,8 @@ module Tremolo
 
     def evaluate(node)
       case node.type
-      when :plus
-        evaluate(node.lhs) + evaluate(node.rhs)
-      when :minus
-        evaluate(node.lhs) - evaluate(node.rhs)
-      when :asterisk
-        evaluate(node.lhs) * evaluate(node.rhs)
-      when :slash
-        evaluate(node.lhs) / evaluate(node.rhs)
-      when :percent
-        evaluate(node.lhs) % evaluate(node.rhs)
-      when :eq
-        evaluate(node.lhs) == evaluate(node.rhs)
-      when :ne
-        evaluate(node.lhs) != evaluate(node.rhs)
-      when :lt
-        evaluate(node.lhs) < evaluate(node.rhs)
-      when :lteq
-        evaluate(node.lhs) <= evaluate(node.rhs)
-      when :gt
-        evaluate(node.lhs) > evaluate(node.rhs)
-      when :gteq
-        evaluate(node.lhs) >= evaluate(node.rhs)
+      when :binary
+        evaluate_binary(node)
       when :number
         evaluate_number(node)
       when :program, :stmts
@@ -84,6 +64,28 @@ module Tremolo
       when :call
         evaluate_call(node)
       end
+    end
+
+    BINARY_OPERATORS = {
+      eq:   lambda { |l, r| l == r },
+      ne:   lambda { |l, r| l != r },
+      lt:   lambda { |l, r| l <  r },
+      lteq: lambda { |l, r| l <= r },
+      gt:   lambda { |l, r| l >  r },
+      gteq: lambda { |l, r| l >= r },
+      add:  lambda { |l, r| l +  r },
+      sub:  lambda { |l, r| l -  r },
+      mul:  lambda { |l, r| l *  r },
+      div:  lambda { |l, r| l /  r },
+      mod:  lambda { |l, r| l %  r },
+    }
+
+    def evaluate_binary(node)
+      op = BINARY_OPERATORS[node.op]
+      op.call(
+        evaluate(node.lhs),
+        evaluate(node.rhs),
+      )
     end
 
     def evaluate_number(node)

@@ -1,9 +1,17 @@
 module Tremolo
   class Node
-    attr_reader :type, :lhs, :rhs, :stmts, :cond, :params, :args
+    attr_reader :type,
+                :op,        # binary operator
+                :lhs,       # left-hand side
+                :rhs,       # right-hand side
+                :stmts,     # compound statements
+                :cond,      # if's condition statement
+                :params,    # function parameters
+                :args       # function arguments
 
-    def initialize(type, lhs: nil, rhs: nil, stmts: nil, cond: nil, params: nil, args: nil)
+    def initialize(type, op: nil, lhs: nil, rhs: nil, stmts: nil, cond: nil, params: nil, args: nil)
       @type = type
+      @op = op
       @lhs = lhs
       @rhs = rhs
       @stmts = stmts
@@ -103,9 +111,9 @@ module Tremolo
     def parse_equality
       relational = parse_relational
       if consume(:eq)
-        Node.new(:eq, lhs: relational, rhs: parse_equality)
+        Node.new(:binary, op: :eq, lhs: relational, rhs: parse_equality)
       elsif consume(:ne)
-        Node.new(:ne, lhs: relational, rhs: parse_equality)
+        Node.new(:binary, op: :ne, lhs: relational, rhs: parse_equality)
       else
         relational
       end
@@ -120,13 +128,13 @@ module Tremolo
     def parse_relational
       add = parse_add
       if consume(:lt)
-        Node.new(:lt, lhs: add, rhs: parse_relational)
+        Node.new(:binary, op: :lt, lhs: add, rhs: parse_relational)
       elsif consume(:lteq)
-        Node.new(:lteq, lhs: add, rhs: parse_relational)
+        Node.new(:binary, op: :lteq, lhs: add, rhs: parse_relational)
       elsif consume(:gt)
-        Node.new(:gt, lhs: add, rhs: parse_relational)
+        Node.new(:binary, op: :gt, lhs: add, rhs: parse_relational)
       elsif consume(:gteq)
-        Node.new(:gteq, lhs: add, rhs: parse_relational)
+        Node.new(:binary, op: :gteq, lhs: add, rhs: parse_relational)
       else
         add
       end
@@ -137,21 +145,29 @@ module Tremolo
     # add' -> {+-} add
     def parse_add
       mul = parse_mul
-      %i(plus minus).each do |op|
-        return Node.new(op, lhs: mul, rhs: parse_add) if consume(op)
+      if consume(:plus)
+        Node.new(:binary, op: :add, lhs: mul, rhs: parse_add)
+      elsif consume(:minus)
+        Node.new(:binary, op: :sub, lhs: mul, rhs: parse_add)
+      else
+        mul
       end
-      mul
     end
 
     # mul  -> term mul'
     # mul' -> empty
     # mul' -> {*/%} mul
     def parse_mul
-      number = parse_term
-      %i(asterisk slash percent).each do |op|
-        return Node.new(op, lhs: number, rhs: parse_mul) if consume(op)
+      term = parse_term
+      if consume(:asterisk)
+        Node.new(:binary, op: :mul, lhs: term, rhs: parse_mul)
+      elsif consume(:slash)
+        Node.new(:binary, op: :div, lhs: term, rhs: parse_mul)
+      elsif consume(:percent)
+        Node.new(:binary, op: :mod, lhs: term, rhs: parse_mul)
+      else
+        term
       end
-      number
     end
 
     # term -> number
