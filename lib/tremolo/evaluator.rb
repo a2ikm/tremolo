@@ -9,6 +9,10 @@ module Tremolo
       self.class.new(self)
     end
 
+    def key?(key)
+      !!lookup(key)
+    end
+
     def []=(key, value)
       env = lookup(key)
       if env
@@ -133,7 +137,11 @@ module Tremolo
     end
 
     def evaluate_ident(node, env)
-      env[node.lhs]
+      if env.key?(node.lhs)
+        env[node.lhs]
+      else
+        abort "var `#{node.lhs}` is not defined"
+      end
     end
 
     def evaluate_if(node, env)
