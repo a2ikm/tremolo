@@ -1,5 +1,3 @@
-require_relative "node"
-
 module Tremolo
   class Node
     attr_reader :type, :lhs, :rhs, :stmts, :cond, :params, :args
