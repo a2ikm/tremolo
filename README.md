@@ -7,3 +7,4 @@
 - [Writing an interpreter in Go](https://interpreterbook.com/)
 - [Rubyのしくみ　Ruby Under a Microscope](https://www.ohmsha.co.jp/book/9784274050657/)
 - [9cc](https://github.com/rui314/9cc)
+- [つくって学ぶプログラミング言語 RubyによるScheme処理系の実装](https://tatsu-zine.com/books/scheme-in-ruby)
