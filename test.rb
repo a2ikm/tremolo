@@ -87,3 +87,6 @@ assert_equal 2, ret
 
 ret = tremolo("let x = 1; let x = x + 1; x")
 assert_equal 2, ret
+
+ret = tremolo("let f1 = func() { func(x) { x + 1 } }; let f2 = f1(); f2(2)")
+assert_equal 3, ret
