@@ -79,7 +79,7 @@ assert_equal 15, ret
 ret = tremolo("let x = 1; let f = func() { let x = 2 }; f(); x ")
 assert_equal 2, ret
 
-ret = tremolo("let f = func() { let x = 2 }; f(); if x { 1 } else { 2 } ")
+ret = tremolo("let f = func() { let x = 2 }; f(); if defined(x) { 1 } else { 2 } ")
 assert_equal 2, ret
 
 ret = tremolo("let x = 1; let f = func() { x + 1 }; f()")

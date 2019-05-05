@@ -157,14 +157,31 @@ module Tremolo
     end
 
     def evaluate_call(node, env)
-      func = env[node.lhs]
-      abort "func `#{node.lhs}` is not defined" if func.nil?
+      name = node.lhs
+      if env.key?(name)
+        call_user_func(node, env)
+      elsif builtin_func?(name)
+        call_builtin_func(node, env)
+      else
+        abort "func `#{name}` is not defined"
+      end
+    end
 
+    def call_user_func(node, env)
+      func = env[node.lhs]
       new_env = func.env.spawn
       func.node.params.zip(node.args).each do |param, arg|
         new_env[param.lhs] = arg.lhs
       end
       evaluate(func.node.body, new_env)
+    end
+
+    def builtin_func?(name)
+      name == "defined"
+    end
+
+    def call_builtin_func(node, env)
+      env.key?(node.lhs)
     end
   end
 end
