@@ -107,7 +107,7 @@ module Tremolo
     def evaluate_if(node)
       if evaluate(node.cond)
         evaluate(node.lhs)
-      else
+      elsif node.rhs
         evaluate(node.rhs)
       end
     end
