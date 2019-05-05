@@ -21,7 +21,7 @@ module Tremolo
     end
 
     def evaluate(program)
-      Evaluator.new.evaluate(program)
+      Evaluator.new(program).start
     end
   end
 end

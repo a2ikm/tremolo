@@ -1,66 +1,79 @@
 module Tremolo
   class Environment
-    def initialize
-      @global = {}
-      @stack = [@global]
+    def initialize(parent = nil)
+      @parent = parent
+      @data = {}
+    end
+
+    def spawn
+      self.class.new(self)
     end
 
     def []=(key, value)
       env = lookup(key)
       if env
-        env[key] = value
+        env.set(key, value)
       else
-        current[key] = value
+        set(key, value)
       end
     end
 
     def [](key)
       env = lookup(key)
-      env ? env[key] : nil
+      env ? env.get(key) : nil
+    end
+
+    protected
+
+    def get(key)
+      @data[key]
+    end
+
+    def set(key, value)
+      @data[key] = value
     end
 
     def lookup(key)
-      @stack.reverse.detect { |env| env.key?(key) }
-    end
-
-    def current
-      @stack.last
-    end
-
-    def push
-      @stack.push({})
-    end
-
-    def pop
-      @stack.pop
+      if @data.key?(key)
+        self
+      elsif @parent
+        @parent.lookup(key)
+      else
+        nil
+      end
     end
   end
 
   class Evaluator
-    def initialize
-      @env = Environment.new
+    def initialize(program)
+      @program = program
+      @top_level = Environment.new
     end
 
-    def evaluate(node)
+    def start
+      evaluate(@program, @top_level)
+    end
+
+    def evaluate(node, env)
       case node.type
       when :binary
-        evaluate_binary(node)
+        evaluate_binary(node, env)
       when :number
-        evaluate_number(node)
+        evaluate_number(node, env)
       when :program
-        evaluate_program(node)
+        evaluate_program(node, env)
       when :block
-        evaluate_block(node)
+        evaluate_block(node, env)
       when :assign
-        evaluate_assign(node)
+        evaluate_assign(node, env)
       when :ident
-        evaluate_ident(node)
+        evaluate_ident(node, env)
       when :if
-        evaluate_if(node)
+        evaluate_if(node, env)
       when :func
-        evaluate_func(node)
+        evaluate_func(node, env)
       when :call
-        evaluate_call(node)
+        evaluate_call(node, env)
       end
     end
 
@@ -78,65 +91,63 @@ module Tremolo
       mod:  lambda { |l, r| l %  r },
     }
 
-    def evaluate_binary(node)
+    def evaluate_binary(node, env)
       op = BINARY_OPERATORS[node.op]
       op.call(
-        evaluate(node.lhs),
-        evaluate(node.rhs),
+        evaluate(node.lhs, env),
+        evaluate(node.rhs, env),
       )
     end
 
-    def evaluate_number(node)
+    def evaluate_number(node, env)
       node.lhs.to_i
     end
 
-    def evaluate_program(node)
-      evaluate_stmts(node.stmts)
+    def evaluate_program(node, env)
+      evaluate_stmts(node.stmts, env)
     end
 
-    def evaluate_block(node)
-      evaluate_stmts(node.stmts)
+    def evaluate_block(node, env)
+      evaluate_stmts(node.stmts, env.spawn)
     end
 
-    def evaluate_stmts(stmts)
+    def evaluate_stmts(stmts, env)
       last = nil
       stmts.each do |stmt|
-        last = evaluate(stmt)
+        last = evaluate(stmt, env)
       end
       last
     end
 
-    def evaluate_assign(node)
-      @env[node.lhs] = evaluate(node.rhs)
+    def evaluate_assign(node, env)
+      env[node.lhs] = evaluate(node.rhs, env)
     end
 
-    def evaluate_ident(node)
-      @env[node.lhs]
+    def evaluate_ident(node, env)
+      env[node.lhs]
     end
 
-    def evaluate_if(node)
-      if evaluate(node.cond)
-        evaluate(node.lhs)
+    def evaluate_if(node, env)
+      if evaluate(node.cond, env)
+        evaluate(node.lhs, env.spawn)
       elsif node.rhs
-        evaluate(node.rhs)
+        evaluate(node.rhs, env.spawn)
       end
     end
 
-    def evaluate_func(node)
+    def evaluate_func(node, env)
       node
     end
 
-    def evaluate_call(node)
-      func = @env[node.lhs]
+    def evaluate_call(node, env)
+      func = env[node.lhs]
       abort "func `#{node.lhs}` is not defined" if func.nil?
 
-      @env.push
+      new_env = env.spawn
       func.params.zip(node.args).each do |param, arg|
-        @env[param.lhs] = arg.lhs
+        new_env[param.lhs] = arg.lhs
       end
-      evaluate(func.body)
-    ensure
-      @env.pop
+      evaluate(func.body, new_env)
     end
   end
 end
