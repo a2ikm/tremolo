@@ -44,6 +44,15 @@ module Tremolo
     end
   end
 
+  class Function
+    attr_reader :node, :env
+
+    def initialize(node, env)
+      @node = node
+      @env = env
+    end
+  end
+
   class Evaluator
     def initialize(program)
       @program = program
@@ -136,18 +145,18 @@ module Tremolo
     end
 
     def evaluate_func(node, env)
-      node
+      Function.new(node, env)
     end
 
     def evaluate_call(node, env)
       func = env[node.lhs]
       abort "func `#{node.lhs}` is not defined" if func.nil?
 
-      new_env = env.spawn
-      func.params.zip(node.args).each do |param, arg|
+      new_env = func.env.spawn
+      func.node.params.zip(node.args).each do |param, arg|
         new_env[param.lhs] = arg.lhs
       end
-      evaluate(func.body, new_env)
+      evaluate(func.node.body, new_env)
     end
   end
 end
