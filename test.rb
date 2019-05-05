@@ -66,3 +66,12 @@ assert_equal 22, ret
 
 ret = tremolo("let x = 1;\n if x > 0 {\n 1 \n} else {\n 2 \n}")
 assert_equal 1, ret
+
+ret = tremolo("let f = func() { 2 }; f()")
+assert_equal 2, ret
+
+ret = tremolo("let f = func(x) { x + 2 }; f(1)")
+assert_equal 3, ret
+
+ret = tremolo("let f = func(x, y) { x + y + 4 }; f(1,2)+8")
+assert_equal 15, ret

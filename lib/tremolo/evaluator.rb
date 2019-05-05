@@ -42,6 +42,10 @@ module Tremolo
         else
           evaluate(node.rhs)
         end
+      when :func
+        evaluate_func(node)
+      when :call
+        evaluate_call(node)
       end
     end
 
@@ -63,6 +67,21 @@ module Tremolo
 
     def evaluate_ident(node)
       @env[node.lhs]
+    end
+
+    def evaluate_func(node)
+      node
+    end
+
+    def evaluate_call(node)
+      func = @env[node.lhs]
+      abort "func `#{node.lhs}` is not defined" if func.nil?
+
+      func.params.zip(node.args).each do |param, arg|
+        @env[param.lhs] = arg.lhs
+      end
+
+      evaluate(func.stmts)
     end
   end
 end

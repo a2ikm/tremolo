@@ -2,14 +2,16 @@ require_relative "node"
 
 module Tremolo
   class Node
-    attr_reader :type, :lhs, :rhs, :stmts, :cond
+    attr_reader :type, :lhs, :rhs, :stmts, :cond, :params, :args
 
-    def initialize(type, lhs: nil, rhs: nil, stmts: nil, cond: nil)
+    def initialize(type, lhs: nil, rhs: nil, stmts: nil, cond: nil, params: nil, args: nil)
       @type = type
       @lhs = lhs
       @rhs = rhs
       @stmts = stmts
       @cond = cond
+      @params = params
+      @args = args
     end
   end
 
@@ -36,14 +38,14 @@ module Tremolo
       Node.new(:program, stmts: stmts.compact)
     end
 
-    # stmt -> let ident = equality
+    # stmt -> let ident = assignee
     # stmt -> if equality block
     # stmt -> equality
     def parse_stmt
       if consume(:let)
         token = expect(:ident)
         expect(:assign)
-        Node.new(:assign, lhs: token.input, rhs: parse_equality)
+        Node.new(:assign, lhs: token.input, rhs: parse_assignee)
       elsif consume(:if)
         cond = parse_equality
         raise "parse error" if cond.nil?
@@ -56,6 +58,32 @@ module Tremolo
       else
         parse_equality
       end
+    end
+
+    # assignee : equality
+    # assignee : func(params) block
+    def parse_assignee
+      if token = consume(:func)
+        expect(:lparen)
+        params = parse_params
+        expect(:rparen)
+        stmts = parse_block
+        Node.new(:func, params: params, stmts: stmts)
+      else
+        parse_equality
+      end
+    end
+
+    def parse_params
+      params = []
+      if token = consume(:ident)
+        params << Node.new(:ident, lhs: token.input)
+        while consume(:comma)
+          token = expect(:ident)
+          params << Node.new(:ident, lhs: token.input)
+        end
+      end
+      params
     end
 
     # block -> { stmts }
@@ -130,6 +158,7 @@ module Tremolo
 
     # term -> number
     # term -> ident
+    # term -> ident ( args )
     # term -> ( equality )
     def parse_term
       if consume(:lparen)
@@ -143,8 +172,25 @@ module Tremolo
       end
 
       if token = consume(:ident)
-        return Node.new(:ident, lhs: token.input)
+        if consume(:lparen)
+          args = parse_args
+          expect(:rparen)
+          return Node.new(:call, lhs: token.input, args: args)
+        else
+          return Node.new(:ident, lhs: token.input)
+        end
       end
+    end
+
+    def parse_args
+      args = []
+      if arg = parse_equality
+        args << arg
+        while consume(:comma)
+          args << parse_equality
+        end
+      end
+      args
     end
 
     def consume(type)

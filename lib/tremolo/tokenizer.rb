@@ -10,12 +10,14 @@ module Tremolo
     "{" => :lbrace,
     "}" => :rbrace,
     ";" => :semicolon,
+    "," => :comma,
   }
 
   KEYWORD_TOKENS = {
     "let"   => :let,
     "if"    => :if,
     "else"  => :else,
+    "func"  => :func,
   }
 
   class Token
