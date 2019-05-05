@@ -1,7 +1,44 @@
 module Tremolo
+  class Environment
+    def initialize
+      @global = {}
+      @stack = [@global]
+    end
+
+    def []=(key, value)
+      env = lookup(key)
+      if env
+        env[key] = value
+      else
+        current[key] = value
+      end
+    end
+
+    def [](key)
+      env = lookup(key)
+      env ? env[key] : nil
+    end
+
+    def lookup(key)
+      @stack.reverse.detect { |env| env.key?(key) }
+    end
+
+    def current
+      @stack.last
+    end
+
+    def push
+      @stack.push({})
+    end
+
+    def pop
+      @stack.pop
+    end
+  end
+
   class Evaluator
     def initialize
-      @env = {}
+      @env = Environment.new
     end
 
     def evaluate(node)
@@ -77,11 +114,13 @@ module Tremolo
       func = @env[node.lhs]
       abort "func `#{node.lhs}` is not defined" if func.nil?
 
+      @env.push
       func.params.zip(node.args).each do |param, arg|
         @env[param.lhs] = arg.lhs
       end
-
       evaluate(func.stmts)
+    ensure
+      @env.pop
     end
   end
 end
