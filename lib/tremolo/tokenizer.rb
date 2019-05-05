@@ -152,10 +152,14 @@ module Tremolo
       char && char.match?(/\A[_a-z]\z/)
     end
 
+    def ident_tail?(char)
+      char && char.match?(/\A[_a-zA-Z0-9]\z/)
+    end
+
     def read_ident
       pos = @pos
       while @pos < @len
-        if ident?(peek)
+        if ident_tail?(peek)
           advance
         else
           break
