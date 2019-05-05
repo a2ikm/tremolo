@@ -5,7 +5,6 @@ require_relative "evaluator"
 module Tremolo
   class CLI
     def run
-      @env = {}
       source = $stdin.read
       tokens = tokenize(source)
       program = parse(tokens)
