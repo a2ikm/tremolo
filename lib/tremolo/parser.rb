@@ -11,6 +11,7 @@ module Tremolo
       :params,    # function parameters
       :args,      # function arguments
       :value,     # immediate value
+      :name,      # function's and variable's name
     ]
 
     attr_reader *FIELDS
@@ -82,7 +83,7 @@ module Tremolo
     def parse_stmt
       if consume(:let)
         token = expect(:ident)
-        vardef = Node.new(:vardef, lhs: token.input)
+        vardef = Node.new(:vardef, name: token.input)
         expect(:assign)
         Node.new(:assign, lhs: vardef, rhs: parse_expression)
       elsif consume(:if)
@@ -244,9 +245,9 @@ module Tremolo
         if consume(:lparen)
           args = parse_args
           expect(:rparen)
-          return Node.new(:call, lhs: token.input, args: args)
+          return Node.new(:call, name: token.input, args: args)
         else
-          return Node.new(:varref, lhs: token.input)
+          return Node.new(:varref, name: token.input)
         end
       end
     end
@@ -254,10 +255,10 @@ module Tremolo
     def parse_params
       params = []
       if token = consume(:ident)
-        params << Node.new(:vardef, lhs: token.input)
+        params << Node.new(:vardef, name: token.input)
         while consume(:comma)
           token = expect(:ident)
-          params << Node.new(:vardef, lhs: token.input)
+          params << Node.new(:vardef, name: token.input)
         end
       end
       params

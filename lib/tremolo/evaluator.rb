@@ -164,14 +164,14 @@ module Tremolo
     end
 
     def evaluate_assign(node, env)
-      env[node.lhs.lhs] = evaluate(node.rhs, env)
+      env[node.lhs.name] = evaluate(node.rhs, env)
     end
 
     def evaluate_varref(node, env)
-      if env.key?(node.lhs)
-        env[node.lhs]
+      if env.key?(node.name)
+        env[node.name]
       else
-        abort "var `#{node.lhs}` is not defined"
+        abort "var `#{node.name}` is not defined"
       end
     end
 
@@ -188,7 +188,7 @@ module Tremolo
     end
 
     def evaluate_call(node, env)
-      name = node.lhs
+      name = node.name
       if env.key?(name)
         call_user_func(node, env)
       elsif builtin_defined_func?(name)
@@ -201,11 +201,11 @@ module Tremolo
     end
 
     def call_user_func(node, env)
-      func = env[node.lhs]
+      func = env[node.name]
       new_env = func.env.spawn
       args = evaluate_args(node, env)
       func.node.params.zip(args).each do |param, arg|
-        new_env[param.lhs] = arg
+        new_env[param.name] = arg
       end
       catch(:return) do
         evaluate(func.node.body, new_env)
@@ -217,7 +217,7 @@ module Tremolo
     end
 
     def call_builtin_defined_func(node, env)
-      env.key?(node.lhs)
+      env.key?(node.name)
     end
 
     BUILTIN_FUNCTIONS = {
@@ -229,7 +229,7 @@ module Tremolo
     end
 
     def call_builtin_func(node, env)
-      func = BUILTIN_FUNCTIONS[node.lhs]
+      func = BUILTIN_FUNCTIONS[node.name]
       args = evaluate_args(node, env)
       func.call(node, env, args)
     end
