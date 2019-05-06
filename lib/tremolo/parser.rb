@@ -68,10 +68,9 @@ module Tremolo
     # program' -> ; program
     def parse_program
       stmts = []
-      loop do
+      while @pos < @len
         stmts << parse_stmt
-        next if consume(:semicolon)
-        break
+        consume(:semicolon)
       end
       Node.new(:program, stmts: stmts.compact)
     end
