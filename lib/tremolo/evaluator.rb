@@ -203,8 +203,9 @@ module Tremolo
     def call_user_func(node, env)
       func = env[node.lhs]
       new_env = func.env.spawn
-      func.node.params.zip(node.args).each do |param, arg|
-        new_env[param.lhs] = arg.lhs
+      args = evaluate_args(node, env)
+      func.node.params.zip(args).each do |param, arg|
+        new_env[param.lhs] = arg
       end
       catch(:return) do
         evaluate(func.node.body, new_env)
@@ -229,13 +230,17 @@ module Tremolo
 
     def call_builtin_func(node, env)
       func = BUILTIN_FUNCTIONS[node.lhs]
-      args = node.args.map { |arg| evaluate(arg, env) }
+      args = evaluate_args(node, env)
       func.call(node, env, args)
     end
 
     def evaluate_return(node, env)
-      args = node.args.map { |arg| evaluate(arg, env) }
+      args = evaluate_args(node, env)
       throw :return, *args
+    end
+
+    def evaluate_args(node, env)
+      node.args.map { |arg| evaluate(arg, env) }
     end
   end
 end
