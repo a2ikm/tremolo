@@ -125,7 +125,7 @@ module Tremolo
       end
     end
 
-    class Function
+    class UserFunction
       attr_reader :node, :env
 
       def initialize(node, env)
@@ -135,7 +135,7 @@ module Tremolo
     end
 
     def evaluate_func(node, env)
-      Function.new(node, env)
+      UserFunction.new(node, env)
     end
 
     def evaluate_call(node, env)
