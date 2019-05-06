@@ -106,10 +106,9 @@ module Tremolo
     def parse_block
       stmts = []
       expect(:lbrace)
-      loop do
+      until consume(:rbrace)
         stmts << parse_stmt
-        next if consume(:semicolon)
-        break if consume(:rbrace)
+        consume(:semicolon)
       end
       Node.new(:block, stmts: stmts.compact)
     end
