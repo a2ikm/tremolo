@@ -85,8 +85,8 @@ module Tremolo
         evaluate_block(node, env)
       when :assign
         evaluate_assign(node, env)
-      when :ident
-        evaluate_ident(node, env)
+      when :varref
+        evaluate_varref(node, env)
       when :if
         evaluate_if(node, env)
       when :func
@@ -164,10 +164,10 @@ module Tremolo
     end
 
     def evaluate_assign(node, env)
-      env[node.lhs] = evaluate(node.rhs, env)
+      env[node.lhs.lhs] = evaluate(node.rhs, env)
     end
 
-    def evaluate_ident(node, env)
+    def evaluate_varref(node, env)
       if env.key?(node.lhs)
         env[node.lhs]
       else

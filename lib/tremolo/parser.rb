@@ -75,15 +75,16 @@ module Tremolo
       Node.new(:program, stmts: stmts.compact)
     end
 
-    # stmt -> let ident = expression
+    # stmt -> let vardef = expression
     # stmt -> if expression block
     # stmt -> return args
     # stmt -> expression
     def parse_stmt
       if consume(:let)
         token = expect(:ident)
+        vardef = Node.new(:vardef, lhs: token.input)
         expect(:assign)
-        Node.new(:assign, lhs: token.input, rhs: parse_expression)
+        Node.new(:assign, lhs: vardef, rhs: parse_expression)
       elsif consume(:if)
         cond = parse_expression
         raise "parse error" if cond.nil?
@@ -202,8 +203,8 @@ module Tremolo
     # term -> "\"" string "\""
     # term -> true
     # term -> false
-    # term -> ident
-    # term -> ident ( args )
+    # term -> varref
+    # term -> varref ( args )
     # term -> func(params) block
     # term -> ( expression )
     def parse_term
@@ -245,7 +246,7 @@ module Tremolo
           expect(:rparen)
           return Node.new(:call, lhs: token.input, args: args)
         else
-          return Node.new(:ident, lhs: token.input)
+          return Node.new(:varref, lhs: token.input)
         end
       end
     end
@@ -253,10 +254,10 @@ module Tremolo
     def parse_params
       params = []
       if token = consume(:ident)
-        params << Node.new(:ident, lhs: token.input)
+        params << Node.new(:vardef, lhs: token.input)
         while consume(:comma)
           token = expect(:ident)
-          params << Node.new(:ident, lhs: token.input)
+          params << Node.new(:vardef, lhs: token.input)
         end
       end
       params
