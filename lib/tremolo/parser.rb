@@ -98,13 +98,8 @@ module Tremolo
     end
 
     # expression -> equality
-    # expression -> ! expression
     def parse_expression
-      if consume(:bang)
-        Node.new(:unary, op: :not, lhs: parse_expression)
-      else
-        parse_equality
-      end
+      parse_equality
     end
 
     # block -> { stmts }
@@ -185,11 +180,14 @@ module Tremolo
       end
     end
 
+    # unary -> ! unary
     # unary -> term
     # unary -> + term
     # unary -> - term
     def parse_unary
-      if consume(:plus)
+      if consume(:bang)
+        Node.new(:unary, op: :not, lhs: parse_unary)
+      elsif consume(:plus)
         Node.new(:unary, op: :plus, lhs: parse_term)
       elsif consume(:minus)
         Node.new(:unary, op: :minus, lhs: parse_term)
