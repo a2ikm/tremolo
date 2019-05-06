@@ -16,7 +16,6 @@ module Tremolo
   }
 
   KEYWORD_TOKENS = {
-    "let"     => :let,
     "if"      => :if,
     "else"    => :else,
     "func"    => :func,

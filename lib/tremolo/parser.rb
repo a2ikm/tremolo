@@ -77,12 +77,12 @@ module Tremolo
       Node.new(:program, stmts: stmts.compact)
     end
 
-    # stmt -> let vardef = expression
+    # stmt -> vardef = expression
     # stmt -> if expression block
     # stmt -> return args
     # stmt -> expression
     def parse_stmt
-      if consume(:let)
+      if current?(:ident) && peek?(:assign)
         token = expect(:ident)
         vardef = Node.new(:vardef, name: token.input)
         expect(:assign)
@@ -277,7 +277,7 @@ module Tremolo
     end
 
     def consume(type)
-      return nil if current&.type != type
+      return nil if !current?(type)
       token = current
       advance
       token
@@ -299,8 +299,16 @@ module Tremolo
       @tokens[@pos]
     end
 
+    def current?(type)
+      current&.type == type
+    end
+
     def peek
       @tokens[@pos + 1 + count_upcoming_skips]
+    end
+
+    def peek?(type)
+      peek&.type == type
     end
 
     SKIPPED_TOKENS = %i(newline whitespace)
