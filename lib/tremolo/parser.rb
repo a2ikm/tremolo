@@ -68,6 +68,7 @@ module Tremolo
     # program' -> empty
     # program' -> ; program
     def parse_program
+      skip_skips
       stmts = []
       while @pos < @len
         stmts << parse_stmt
@@ -310,6 +311,12 @@ module Tremolo
         skips += 1
       end
       skips
+    end
+
+    def skip_skips
+      while SKIPPED_TOKENS.include?(current&.type)
+        advance
+      end
     end
   end
 end
