@@ -20,6 +20,8 @@ module Tremolo
     "if"    => :if,
     "else"  => :else,
     "func"  => :func,
+    "true"  => :true,
+    "false" => :false,
   }
 
   class Token

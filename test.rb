@@ -122,3 +122,9 @@ assert_equal 0, ret
 
 ret = tremolo("if !!(1 == 0) { 0 } else { 1 }")
 assert_equal 1, ret
+
+ret = tremolo("if true { 0 } else { 1 }")
+assert_equal 0, ret
+
+ret = tremolo("if false { 1 } else { 0 }")
+assert_equal 0, ret

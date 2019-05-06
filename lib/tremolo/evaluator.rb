@@ -75,6 +75,8 @@ module Tremolo
         evaluate_binary(node, env)
       when :number
         evaluate_number(node, env)
+      when :boolean
+        evaluate_boolean(node, env)
       when :string
         evaluate_string(node, env)
       when :program
@@ -131,6 +133,10 @@ module Tremolo
 
     def evaluate_number(node, env)
       node.lhs.to_i
+    end
+
+    def evaluate_boolean(node, env)
+      node.lhs
     end
 
     def evaluate_string(node, env)

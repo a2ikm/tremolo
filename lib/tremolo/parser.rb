@@ -200,6 +200,8 @@ module Tremolo
 
     # term -> number
     # term -> "\"" string "\""
+    # term -> true
+    # term -> false
     # term -> ident
     # term -> ident ( args )
     # term -> func(params) block
@@ -227,6 +229,14 @@ module Tremolo
 
       if token = consume(:number)
         return Node.new(:number, lhs: token.input.to_i)
+      end
+
+      if token = consume(:true)
+        return Node.new(:boolean, lhs: true)
+      end
+
+      if token = consume(:false)
+        return Node.new(:boolean, lhs: false)
       end
 
       if token = consume(:ident)
