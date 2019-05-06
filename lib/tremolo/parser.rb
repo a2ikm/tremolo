@@ -97,30 +97,9 @@ module Tremolo
       end
     end
 
-    # expression : equality
-    # expression : func(params) block
+    # expression -> equality
     def parse_expression
-      if token = consume(:func)
-        expect(:lparen)
-        params = parse_params
-        expect(:rparen)
-        body = parse_block
-        Node.new(:func, params: params, body: body)
-      else
-        parse_equality
-      end
-    end
-
-    def parse_params
-      params = []
-      if token = consume(:ident)
-        params << Node.new(:ident, lhs: token.input)
-        while consume(:comma)
-          token = expect(:ident)
-          params << Node.new(:ident, lhs: token.input)
-        end
-      end
-      params
+      parse_equality
     end
 
     # block -> { stmts }
@@ -204,8 +183,17 @@ module Tremolo
     # term -> number
     # term -> ident
     # term -> ident ( args )
+    # term -> func(params) block
     # term -> ( equality )
     def parse_term
+      if consume(:func)
+        expect(:lparen)
+        params = parse_params
+        expect(:rparen)
+        body = parse_block
+        return Node.new(:func, params: params, body: body)
+      end
+
       if consume(:lparen)
         equality = parse_equality
         expect(:rparen)
@@ -225,6 +213,18 @@ module Tremolo
           return Node.new(:ident, lhs: token.input)
         end
       end
+    end
+
+    def parse_params
+      params = []
+      if token = consume(:ident)
+        params << Node.new(:ident, lhs: token.input)
+        while consume(:comma)
+          token = expect(:ident)
+          params << Node.new(:ident, lhs: token.input)
+        end
+      end
+      params
     end
 
     def parse_args

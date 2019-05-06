@@ -93,3 +93,12 @@ assert_equal 3, ret
 
 ret = tremolo("let f = func() { let x = 0; func() { let x = x + 1; x } }; let c = f(); c(); c(); c()")
 assert_equal 3, ret
+
+ret = tremolo("func(){}; 0")
+assert_equal 0, ret
+
+ret = tremolo("func(){} == func(){}; 0")
+assert_equal 0, ret
+
+ret = tremolo("(func(){}); 0")
+assert_equal 0, ret
