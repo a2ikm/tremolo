@@ -116,5 +116,5 @@ assert_equal 2, ret
 ret = tremolo("-1 + 2")
 assert_equal 1, ret
 
-ret = tremolo("if !(1 == 0) { 0 } { 1 }")
+ret = tremolo("if !(1 == 0) { 0 } else { 1 }")
 assert_equal 0, ret
