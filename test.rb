@@ -5,6 +5,7 @@ require "test/unit/assertions"
 include Test::Unit::Assertions
 
 def tremolo(program)
+  puts caller(1,1).first
   file = Tempfile.new("testcode")
   file.write(program)
   file.close
@@ -118,3 +119,6 @@ assert_equal 1, ret
 
 ret = tremolo("if !(1 == 0) { 0 } else { 1 }")
 assert_equal 0, ret
+
+ret = tremolo("if !!(1 == 0) { 0 } else { 1 }")
+assert_equal 1, ret
