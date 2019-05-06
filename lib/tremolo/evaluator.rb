@@ -1,13 +1,4 @@
 module Tremolo
-  class Function
-    attr_reader :node, :env
-
-    def initialize(node, env)
-      @node = node
-      @env = env
-    end
-  end
-
   class Evaluator
     def initialize(program, env)
       @program = program
@@ -131,6 +122,15 @@ module Tremolo
         evaluate(node.lhs, env.spawn)
       elsif node.rhs
         evaluate(node.rhs, env.spawn)
+      end
+    end
+
+    class Function
+      attr_reader :node, :env
+
+      def initialize(node, env)
+        @node = node
+        @env = env
       end
     end
 
