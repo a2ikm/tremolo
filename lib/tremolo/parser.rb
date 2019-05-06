@@ -77,17 +77,11 @@ module Tremolo
       Node.new(:program, stmts: stmts.compact)
     end
 
-    # stmt -> vardef = expression
     # stmt -> if expression block
     # stmt -> return args
     # stmt -> expression
     def parse_stmt
-      if current?(:ident) && peek?(:assign)
-        token = expect(:ident)
-        vardef = Node.new(:vardef, name: token.input)
-        expect(:assign)
-        Node.new(:assign, lhs: vardef, rhs: parse_expression)
-      elsif consume(:if)
+      if consume(:if)
         cond = parse_expression
         raise "parse error" if cond.nil?
         block = parse_block
@@ -103,9 +97,17 @@ module Tremolo
       end
     end
 
+    # expression -> vardef = expression
     # expression -> equality
     def parse_expression
-      parse_equality
+      if current?(:ident) && peek?(:assign)
+        token = expect(:ident)
+        vardef = Node.new(:vardef, name: token.input)
+        expect(:assign)
+        Node.new(:assign, lhs: vardef, rhs: parse_expression)
+      else
+        parse_equality
+      end
     end
 
     # block -> { stmts }
