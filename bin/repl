@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+$: << File.expand_path("../../lib", __FILE__)
+require "tremolo"
+
+interpretor = Tremolo::Interpretor.new
+
+loop do
+  print "> "
+
+  begin
+    source = $stdin.gets.chomp
+  rescue Interrupt
+    exit
+  end
+
+  result = interpretor.eval(source)
+  puts result
+end

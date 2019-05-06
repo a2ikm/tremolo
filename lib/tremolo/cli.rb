@@ -1,6 +1,4 @@
-require_relative "tokenizer"
-require_relative "parser"
-require_relative "evaluator"
+require_relative "interpretor"
 
 module Tremolo
   class CLI
@@ -10,25 +8,15 @@ module Tremolo
 
     def run
       source = read_source
-      tokens = tokenize(source)
-      program = parse(tokens)
-      evaluate(program)
+      eval(source)
     end
 
     def read_source
       @argv.empty? ? $stdin.read : File.read(@argv.first)
     end
 
-    def tokenize(source)
-      Tokenizer.new(source).tokenize
-    end
-
-    def parse(tokens)
-      Parser.new(tokens).parse
-    end
-
-    def evaluate(program)
-      Evaluator.new(program).start
+    def eval(source)
+      Interpretor.new.eval(source)
     end
   end
 end

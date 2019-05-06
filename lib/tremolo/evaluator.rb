@@ -58,9 +58,9 @@ module Tremolo
   end
 
   class Evaluator
-    def initialize(program)
+    def initialize(program, env)
       @program = program
-      @top_level = Environment.new
+      @top_level = env
     end
 
     def start
