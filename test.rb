@@ -109,3 +109,12 @@ assert_equal 0, ret
 
 ret = tremolo('puts("This is test code."); 0')
 assert_equal 0, ret
+
+ret = tremolo("-1 * -2")
+assert_equal 2, ret
+
+ret = tremolo("-1 + 2")
+assert_equal 1, ret
+
+ret = tremolo("if !(1 == 0) { 0 } { 1 }")
+assert_equal 0, ret

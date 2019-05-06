@@ -12,6 +12,7 @@ module Tremolo
     ";" => :semicolon,
     "," => :comma,
     '"' => :dquote,
+    "!" => :bang,
   }
 
   KEYWORD_TOKENS = {

@@ -164,19 +164,35 @@ module Tremolo
       end
     end
 
-    # mul  -> term mul'
+    # mul  -> unary mul'
     # mul' -> empty
     # mul' -> {*/%} mul
     def parse_mul
-      term = parse_term
+      unary = parse_unary
       if consume(:asterisk)
-        Node.new(:binary, op: :mul, lhs: term, rhs: parse_mul)
+        Node.new(:binary, op: :mul, lhs: unary, rhs: parse_mul)
       elsif consume(:slash)
-        Node.new(:binary, op: :div, lhs: term, rhs: parse_mul)
+        Node.new(:binary, op: :div, lhs: unary, rhs: parse_mul)
       elsif consume(:percent)
-        Node.new(:binary, op: :mod, lhs: term, rhs: parse_mul)
+        Node.new(:binary, op: :mod, lhs: unary, rhs: parse_mul)
       else
-        term
+        unary
+      end
+    end
+
+    # unary -> term
+    # unary -> + term
+    # unary -> - term
+    # unary -> ! term
+    def parse_unary
+      if consume(:plus)
+        Node.new(:unary, op: :plus, lhs: parse_term)
+      elsif consume(:minus)
+        Node.new(:unary, op: :minus, lhs: parse_term)
+      elsif consume(:bang)
+        Node.new(:unary, op: :not, lhs: parse_term)
+      else
+        parse_term
       end
     end
 

@@ -69,6 +69,8 @@ module Tremolo
 
     def evaluate(node, env)
       case node.type
+      when :unary
+        evaluate_unary(node, env)
       when :binary
         evaluate_binary(node, env)
       when :number
@@ -90,6 +92,19 @@ module Tremolo
       when :call
         evaluate_call(node, env)
       end
+    end
+
+    UNARY_OPERATORS = {
+      plus:  lambda { |v| v  },
+      minus: lambda { |v| -v },
+      not:   lambda { |v| !v },
+    }
+
+    def evaluate_unary(node, env)
+      op = UNARY_OPERATORS[node.op]
+      op.call(
+        evaluate(node.lhs, env)
+      )
     end
 
     BINARY_OPERATORS = {
