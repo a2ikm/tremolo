@@ -1,136 +1,52 @@
 #!/usr/bin/env ruby
 
-require "tempfile"
 require "test/unit/assertions"
 include Test::Unit::Assertions
 
-def tremolo(program)
-  puts caller(1,1).first
-  file = Tempfile.new("testcode")
-  file.write(program)
-  file.close
-  system "bin/tremolo #{file.path}"
-  $?.exitstatus
-ensure
-  file.unlink
+require_relative "lib/tremolo"
+
+def test(expected, source)
+  result = Tremolo::Interpretor.new.eval(source)
+  assert_equal expected, result
 end
 
-ret = tremolo("0")
-assert_equal 0, ret
-
-ret = tremolo("42")
-assert_equal 42, ret
-
-ret = tremolo("1 + 2")
-assert_equal 3, ret
-
-ret = tremolo("3 - 1")
-assert_equal 2, ret
-
-ret = tremolo("2 * 3")
-assert_equal 6, ret
-
-ret = tremolo("5 / 2")
-assert_equal 2, ret
-
-ret = tremolo("7 % 3")
-assert_equal 1, ret
-
-ret = tremolo("10 / 3 + 2")
-assert_equal 5, ret
-
-ret = tremolo("(1 + 2) * 3")
-assert_equal 9, ret
-
-ret = tremolo("1 + \n2")
-assert_equal 3, ret
-
-ret = tremolo("1 \n+ 2")
-assert_equal 3, ret
-
-ret = tremolo("1;2")
-assert_equal 2, ret
-
-ret = tremolo("1;;2")
-assert_equal 2, ret
-
-ret = tremolo(";;2")
-assert_equal 2, ret
-
-ret = tremolo("let answer = 7; 1 + answer")
-assert_equal 8, ret
-
-ret = tremolo("if 1 == 1 { 11 }")
-assert_equal 11, ret
-
-ret = tremolo("if 1 == 1 { 11; 22 }")
-assert_equal 22, ret
-
-ret = tremolo("if 1 == 2 { 11 } else { 22 }")
-assert_equal 22, ret
-
-ret = tremolo("let x = 1;\n if x > 0 {\n 1 \n} else {\n 2 \n}")
-assert_equal 1, ret
-
-ret = tremolo("let f = func() { 2 }; f()")
-assert_equal 2, ret
-
-ret = tremolo("let f = func(x) { x + 2 }; f(1)")
-assert_equal 3, ret
-
-ret = tremolo("let f = func(x, y) { x + y + 4 }; f(1,2)+8")
-assert_equal 15, ret
-
-ret = tremolo("let x = 1; let f = func() { let x = 2 }; f(); x ")
-assert_equal 2, ret
-
-ret = tremolo("let f = func() { let x = 2 }; f(); if defined(x) { 1 } else { 2 } ")
-assert_equal 2, ret
-
-ret = tremolo("let x = 1; let f = func() { x + 1 }; f()")
-assert_equal 2, ret
-
-ret = tremolo("let x = 1; let x = x + 1; x")
-assert_equal 2, ret
-
-ret = tremolo("let f1 = func() { func(x) { x + 1 } }; let f2 = f1(); f2(2)")
-assert_equal 3, ret
-
-ret = tremolo("let f = func() { let x = 0; func() { let x = x + 1; x } }; let c = f(); c(); c(); c()")
-assert_equal 3, ret
-
-ret = tremolo("func(){}; 0")
-assert_equal 0, ret
-
-ret = tremolo("func(){} == func(){}; 0")
-assert_equal 0, ret
-
-ret = tremolo("(func(){}); 0")
-assert_equal 0, ret
-
-ret = tremolo('puts("This is test code."); 0')
-assert_equal 0, ret
-
-ret = tremolo("-1 * -2")
-assert_equal 2, ret
-
-ret = tremolo("-1 + 2")
-assert_equal 1, ret
-
-ret = tremolo("if !(1 == 0) { 0 } else { 1 }")
-assert_equal 0, ret
-
-ret = tremolo("if !!(1 == 0) { 0 } else { 1 }")
-assert_equal 1, ret
-
-ret = tremolo("if true { 0 } else { 1 }")
-assert_equal 0, ret
-
-ret = tremolo("if false { 1 } else { 0 }")
-assert_equal 0, ret
-
-ret = tremolo("1 +\n2")
-assert_equal 3, ret
-
-ret = tremolo("1 \n+ 2")
-assert_equal 3, ret
+test 0, "0"
+test 42, "42"
+test 3, "1 + 2"
+test 2, "3 - 1"
+test 6, "2 * 3"
+test 2, "5 / 2"
+test 1, "7 % 3"
+test 5, "10 / 3 + 2"
+test 9, "(1 + 2) * 3"
+test 3, "1 + \n2"
+test 3, "1 \n+ 2"
+test 2, "1;2"
+test 2, "1;;2"
+test 2, ";;2"
+test 8, "let answer = 7; 1 + answer"
+test 11, "if 1 == 1 { 11 }"
+test 22, "if 1 == 1 { 11; 22 }"
+test 22, "if 1 == 2 { 11 } else { 22 }"
+test 1, "let x = 1;\n if x > 0 {\n 1 \n} else {\n 2 \n}"
+test 2, "let f = func() { 2 }; f()"
+test 3, "let f = func(x) { x + 2 }; f(1)"
+test 15, "let f = func(x, y) { x + y + 4 }; f(1,2)+8"
+test 2, "let x = 1; let f = func() { let x = 2 }; f(); x "
+test 2, "let f = func() { let x = 2 }; f(); if defined(x) { 1 } else { 2 } "
+test 2, "let x = 1; let f = func() { x + 1 }; f()"
+test 2, "let x = 1; let x = x + 1; x"
+test 3, "let f1 = func() { func(x) { x + 1 } }; let f2 = f1(); f2(2)"
+test 3, "let f = func() { let x = 0; func() { let x = x + 1; x } }; let c = f(); c(); c(); c()"
+test 0, "func(){}; 0"
+test 0, "func(){} == func(){}; 0"
+test 0, "(func(){}); 0"
+test 0, 'puts("This is test code."); 0'
+test 2, "-1 * -2"
+test 1, "-1 + 2"
+test 0, "if !(1 == 0) { 0 } else { 1 }"
+test 1, "if !!(1 == 0) { 0 } else { 1 }"
+test 0, "if true { 0 } else { 1 }"
+test 0, "if false { 1 } else { 0 }"
+test 3, "1 +\n2"
+test 3, "1 \n+ 2"
