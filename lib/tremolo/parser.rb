@@ -1,15 +1,19 @@
 module Tremolo
   class Node
-    attr_reader :type,
-                :op,        # binary operator
-                :lhs,       # left-hand side
-                :rhs,       # right-hand side
-                :stmts,     # compound statements
-                :body,      # body block
-                :cond,      # if's condition statement
-                :params,    # function parameters
-                :args,      # function arguments
-                :value      # immediate value
+    FIELDS = [
+      :type,
+      :op,        # binary operator
+      :lhs,       # left-hand side
+      :rhs,       # right-hand side
+      :stmts,     # compound statements
+      :body,      # body block
+      :cond,      # if's condition statement
+      :params,    # function parameters
+      :args,      # function arguments
+      :value,     # immediate value
+    ]
+
+    attr_reader *FIELDS
 
     #
     ## binary
@@ -40,17 +44,11 @@ module Tremolo
     #   body = node(type=block)
     #            stmts = []node(type=*)
     #
-    def initialize(type, op: nil, lhs: nil, rhs: nil, stmts: nil, body: nil, cond: nil, params: nil, args: nil, value: nil)
+    def initialize(type, **options)
       @type = type
-      @op = op
-      @lhs = lhs
-      @rhs = rhs
-      @stmts = stmts
-      @body = body
-      @cond = cond
-      @params = params
-      @args = args
-      @value = value
+      options.slice(*(FIELDS - [:type])).each do |field, value|
+        instance_variable_set("@#{field}", value)
+      end
     end
   end
 
