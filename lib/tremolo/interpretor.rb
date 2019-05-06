@@ -1,6 +1,7 @@
 require_relative "tokenizer"
 require_relative "parser"
 require_relative "evaluator"
+require_relative "environment"
 
 module Tremolo
   class Interpretor
