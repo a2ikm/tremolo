@@ -16,12 +16,13 @@ module Tremolo
   }
 
   KEYWORD_TOKENS = {
-    "let"   => :let,
-    "if"    => :if,
-    "else"  => :else,
-    "func"  => :func,
-    "true"  => :true,
-    "false" => :false,
+    "let"     => :let,
+    "if"      => :if,
+    "else"    => :else,
+    "func"    => :func,
+    "true"    => :true,
+    "false"   => :false,
+    "return"  => :return,
   }
 
   class Token

@@ -93,6 +93,8 @@ module Tremolo
         evaluate_func(node, env)
       when :call
         evaluate_call(node, env)
+      when :return
+        evaluate_return(node, env)
       end
     end
 
@@ -144,7 +146,9 @@ module Tremolo
     end
 
     def evaluate_program(node, env)
-      evaluate_stmts(node.stmts, env)
+      catch(:return) do
+        evaluate_stmts(node.stmts, env)
+      end
     end
 
     def evaluate_block(node, env)
@@ -202,7 +206,9 @@ module Tremolo
       func.node.params.zip(node.args).each do |param, arg|
         new_env[param.lhs] = arg.lhs
       end
-      evaluate(func.node.body, new_env)
+      catch(:return) do
+        evaluate(func.node.body, new_env)
+      end
     end
 
     def builtin_defined_func?(name)
@@ -225,6 +231,11 @@ module Tremolo
       func = BUILTIN_FUNCTIONS[node.lhs]
       args = node.args.map { |arg| evaluate(arg, env) }
       func.call(node, env, args)
+    end
+
+    def evaluate_return(node, env)
+      args = node.args.map { |arg| evaluate(arg, env) }
+      throw :return, *args
     end
   end
 end

@@ -77,6 +77,7 @@ module Tremolo
 
     # stmt -> let ident = expression
     # stmt -> if expression block
+    # stmt -> return args
     # stmt -> expression
     def parse_stmt
       if consume(:let)
@@ -92,6 +93,8 @@ module Tremolo
           alt = parse_block
         end
         Node.new(:if, cond: cond, lhs: block, rhs: alt)
+      elsif consume(:return)
+        Node.new(:return, args: parse_args)
       else
         parse_expression
       end
