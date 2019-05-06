@@ -45,6 +45,7 @@ module Tremolo
 
       while @pos < @len
         if whitespace?(current)
+          @tokens << Token.new(:whitespace, read_whitespace)
           advance
           next
         end
@@ -138,6 +139,18 @@ module Tremolo
 
     def whitespace?(char)
       char && char.match?(/\A[[:blank:]]+\z/)
+    end
+
+    def read_whitespace
+      pos = @pos
+      while @pos < @len
+        if whitespace?(peek)
+          advance
+        else
+          break
+        end
+      end
+      @source[pos..@pos]
     end
 
     def digit?(char)

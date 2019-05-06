@@ -298,9 +298,11 @@ module Tremolo
       @tokens[@pos + 1 + count_upcoming_skips]
     end
 
+    SKIPPED_TOKENS = %i(newline whitespace)
+
     def count_upcoming_skips
       skips = 0
-      while @tokens[@pos + 1 + skips]&.type == :newline
+      while SKIPPED_TOKENS.include?(@tokens[@pos + 1 + skips]&.type)
         skips += 1
       end
       skips
