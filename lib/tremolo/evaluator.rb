@@ -73,6 +73,8 @@ module Tremolo
         evaluate_binary(node, env)
       when :number
         evaluate_number(node, env)
+      when :string
+        evaluate_string(node, env)
       when :program
         evaluate_program(node, env)
       when :block
@@ -114,6 +116,10 @@ module Tremolo
 
     def evaluate_number(node, env)
       node.lhs.to_i
+    end
+
+    def evaluate_string(node, env)
+      node.lhs
     end
 
     def evaluate_program(node, env)
@@ -160,6 +166,8 @@ module Tremolo
       name = node.lhs
       if env.key?(name)
         call_user_func(node, env)
+      elsif builtin_defined_func?(name)
+        call_builtin_defined_func(node, env)
       elsif builtin_func?(name)
         call_builtin_func(node, env)
       else
@@ -176,12 +184,26 @@ module Tremolo
       evaluate(func.node.body, new_env)
     end
 
-    def builtin_func?(name)
+    def builtin_defined_func?(name)
       name == "defined"
     end
 
-    def call_builtin_func(node, env)
+    def call_builtin_defined_func(node, env)
       env.key?(node.lhs)
+    end
+
+    BUILTIN_FUNCTIONS = {
+      "puts" => lambda { |node, env, args| puts(*args) }
+    }
+
+    def builtin_func?(name)
+      BUILTIN_FUNCTIONS.key?(name)
+    end
+
+    def call_builtin_func(node, env)
+      func = BUILTIN_FUNCTIONS[node.lhs]
+      args = node.args.map { |arg| evaluate(arg, env) }
+      func.call(node, env, args)
     end
   end
 end

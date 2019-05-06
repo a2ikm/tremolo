@@ -102,3 +102,6 @@ assert_equal 0, ret
 
 ret = tremolo("(func(){}); 0")
 assert_equal 0, ret
+
+ret = tremolo('puts("This is test code."); 0')
+assert_equal 0, ret

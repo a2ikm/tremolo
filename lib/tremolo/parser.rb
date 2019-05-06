@@ -181,6 +181,7 @@ module Tremolo
     end
 
     # term -> number
+    # term -> "\"" string "\""
     # term -> ident
     # term -> ident ( args )
     # term -> func(params) block
@@ -198,6 +199,12 @@ module Tremolo
         equality = parse_equality
         expect(:rparen)
         return equality
+      end
+
+      if consume(:dquote)
+        token = expect(:string)
+        expect(:dquote)
+        return Node.new(:string, lhs: token.input)
       end
 
       if token = consume(:number)

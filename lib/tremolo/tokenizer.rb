@@ -11,6 +11,7 @@ module Tremolo
     "}" => :rbrace,
     ";" => :semicolon,
     "," => :comma,
+    '"' => :dquote,
   }
 
   KEYWORD_TOKENS = {
@@ -87,6 +88,20 @@ module Tremolo
           else
             @tokens << Token.new(:gt, current)
           end
+          advance
+          next
+        end
+
+        if current == '"'
+          @tokens << Token.new(:dquote, current)
+          advance
+          string = ""
+          while @pos < @len && current != '"'
+            string += current
+            advance
+          end
+          @tokens << Token.new(:string, string)
+          @tokens << Token.new(:dquote, current)
           advance
           next
         end
