@@ -3,4 +3,4 @@
 $: << File.expand_path("../../lib", __FILE__)
 require "tremolo"
 
-exit(Tremolo::CLI.new.run)
+exit(Tremolo::CLI.new(ARGV).run)

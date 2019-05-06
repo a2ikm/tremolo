@@ -4,11 +4,19 @@ require_relative "evaluator"
 
 module Tremolo
   class CLI
+    def initialize(argv = [])
+      @argv = argv
+    end
+
     def run
-      source = $stdin.read
+      source = read_source
       tokens = tokenize(source)
       program = parse(tokens)
       evaluate(program)
+    end
+
+    def read_source
+      @argv.empty? ? $stdin.read : File.read(@argv.first)
     end
 
     def tokenize(source)

@@ -1,13 +1,17 @@
 #!/usr/bin/env ruby
 
-require "shellwords"
+require "tempfile"
 require "test/unit/assertions"
 include Test::Unit::Assertions
 
 def tremolo(program)
-  program = Shellwords.shellescape(program)
-  system "echo #{program} | bin/tremolo"
+  file = Tempfile.new("testcode")
+  file.write(program)
+  file.close
+  system "bin/tremolo #{file.path}"
   $?.exitstatus
+ensure
+  file.unlink
 end
 
 ret = tremolo("0")
