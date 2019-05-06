@@ -8,7 +8,8 @@ module Tremolo
                 :body,      # body block
                 :cond,      # if's condition statement
                 :params,    # function parameters
-                :args       # function arguments
+                :args,      # function arguments
+                :value      # immediate value
 
     #
     ## binary
@@ -39,7 +40,7 @@ module Tremolo
     #   body = node(type=block)
     #            stmts = []node(type=*)
     #
-    def initialize(type, op: nil, lhs: nil, rhs: nil, stmts: nil, body: nil, cond: nil, params: nil, args: nil)
+    def initialize(type, op: nil, lhs: nil, rhs: nil, stmts: nil, body: nil, cond: nil, params: nil, args: nil, value: nil)
       @type = type
       @op = op
       @lhs = lhs
@@ -49,6 +50,7 @@ module Tremolo
       @cond = cond
       @params = params
       @args = args
+      @value = value
     end
   end
 
@@ -224,19 +226,19 @@ module Tremolo
       if consume(:dquote)
         token = expect(:string)
         expect(:dquote)
-        return Node.new(:string, lhs: token.input)
+        return Node.new(:string, value: token.input)
       end
 
       if token = consume(:number)
-        return Node.new(:number, lhs: token.input.to_i)
+        return Node.new(:number, value: token.input.to_i)
       end
 
       if token = consume(:true)
-        return Node.new(:boolean, lhs: true)
+        return Node.new(:boolean, value: true)
       end
 
       if token = consume(:false)
-        return Node.new(:boolean, lhs: false)
+        return Node.new(:boolean, value: false)
       end
 
       if token = consume(:ident)

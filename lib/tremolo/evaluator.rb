@@ -134,15 +134,15 @@ module Tremolo
     end
 
     def evaluate_number(node, env)
-      node.lhs.to_i
+      node.value
     end
 
     def evaluate_boolean(node, env)
-      node.lhs
+      node.value
     end
 
     def evaluate_string(node, env)
-      node.lhs
+      node.value
     end
 
     def evaluate_program(node, env)
