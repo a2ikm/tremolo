@@ -128,3 +128,9 @@ assert_equal 0, ret
 
 ret = tremolo("if false { 1 } else { 0 }")
 assert_equal 0, ret
+
+ret = tremolo("1 +\n2")
+assert_equal 3, ret
+
+ret = tremolo("1 \n+ 2")
+assert_equal 3, ret
